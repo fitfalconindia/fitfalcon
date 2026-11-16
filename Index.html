@@ -1,0 +1,659 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Fit Falcon Chat Lead</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+/* Layout: desktop = scrolling webpage on the left, chat docked (sticky) on the right.
+   Phone = the chat is the whole screen. Signature: the logo's stacked two-tone bars (progress meter, markers). */
+:root{
+  --flame:#EA5B2B; --amber:#F39322; --flame-ink:#C2441A;
+  --ground:#E8E6E3; --panel:#FFFFFF; --chat:#F1EFEC; --dots:rgba(29,23,20,.07);
+  --ink:#1D1714; --muted:#6E655F; --line:#DCD7D2;
+  --head:#1D1714; --head-ink:#FFFFFF; --head-muted:#C9BFB8;
+  --bot:#FFFFFF; --me:#FFE3D2; --chip:#FFFFFF; --chip-hover:#FFF1E8; --chip-on:#FFE3D2;
+  --sys:#FDEBDD; --sys-ink:#A8461C; --err:#C0392B;
+  --display:'Archivo','Arial Narrow',system-ui,sans-serif;
+  --body:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --ground:#120F0D; --panel:#1B1715; --chat:#171311; --dots:rgba(255,255,255,.05);
+  --ink:#F3EEEA; --muted:#A79C95; --line:#3A322D; --flame-ink:#FF8A5C;
+  --head:#0C0A09; --head-ink:#FFFFFF; --head-muted:#A79C95;
+  --bot:#262019; --me:#4A2716; --chip:#221C18; --chip-hover:#33251D; --chip-on:#4A2716;
+  --sys:#3A2014; --sys-ink:#FFB089; --err:#FF7A6B; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --ground:#120F0D; --panel:#1B1715; --chat:#171311; --dots:rgba(255,255,255,.05);
+  --ink:#F3EEEA; --muted:#A79C95; --line:#3A322D; --flame-ink:#FF8A5C;
+  --head:#0C0A09; --head-ink:#FFFFFF; --head-muted:#A79C95;
+  --bot:#262019; --me:#4A2716; --chip:#221C18; --chip-hover:#33251D; --chip-on:#4A2716;
+  --sys:#3A2014; --sys-ink:#FFB089; --err:#FF7A6B; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--body);background:var(--ground);color:var(--ink);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--flame);outline-offset:2px}
+
+.site{display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:48px;max-width:1260px;margin:0 auto;padding-block:24px;padding-inline:32px;align-items:start}
+
+/* ---------- webpage (desktop) ---------- */
+.web{min-width:0;display:flex;flex-direction:column;gap:64px;padding-bottom:24px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.nav .logo svg{display:block;width:190px;height:auto}
+.nav .where{display:flex;align-items:center;gap:14px;font-size:14px;color:var(--muted)}
+.nav .where a{font-weight:700;color:var(--flame-ink);text-decoration:none;border-bottom:1.5px solid currentColor}
+.bars{display:inline-grid;gap:3px;width:22px;flex:0 0 auto}
+.bars i{height:5px;display:block}
+.bars i:first-child{background:var(--flame)}.bars i:last-child{background:var(--amber)}
+
+.hero{display:grid;gap:20px;padding-top:24px}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--flame-ink);display:flex;align-items:center;gap:10px}
+.hero h1{font-family:var(--display);font-stretch:115%;font-weight:800;font-size:clamp(34px,4.2vw,58px);line-height:1;letter-spacing:-.015em;margin:0;text-wrap:balance;max-width:16ch}
+.hero h1 em{font-style:normal;color:var(--flame)}
+.hero p{margin:0;font-size:17.5px;line-height:1.55;color:var(--muted);max-width:52ch}
+.cta{display:inline-flex;align-items:center;gap:10px;justify-self:start;background:linear-gradient(100deg,var(--flame),var(--amber));color:#FFFFFF;border-radius:12px;padding:13px 20px;font-family:var(--display);font-stretch:108%;font-weight:800;font-size:16px;box-shadow:0 8px 22px rgba(234,91,43,.28)}
+.cta:hover{filter:brightness(1.05)}
+
+.sec{display:grid;gap:22px}
+.sec h2{font-family:var(--display);font-stretch:110%;font-weight:800;font-size:28px;line-height:1.1;margin:0;text-wrap:balance}
+.sec .lede{margin:-12px 0 0;color:var(--muted);font-size:15.5px;line-height:1.5;max-width:60ch}
+.cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.cat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.cat h3{font-family:var(--display);font-stretch:105%;font-weight:800;font-size:18px;line-height:1.15;margin:0}
+.cat ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.cat li{font-size:12.5px;background:var(--chat);border-radius:5px;padding:3px 8px;color:var(--ink)}
+.cat p{margin:0;font-size:14px;line-height:1.5;color:var(--muted)}
+.cat button{margin-top:auto;align-self:start;font-weight:700;font-size:14px;color:var(--flame-ink);display:inline-flex;align-items:center;gap:6px;padding:4px 0}
+.cat button:hover{text-decoration:underline}
+.cat.ask{background:var(--head);border-color:var(--head);color:var(--head-ink)}
+.cat.ask p{color:var(--head-muted)}
+.cat.ask button{color:var(--amber)}
+
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;counter-reset:s}
+.step{border-top:3px solid var(--flame);padding-top:14px;display:grid;gap:6px}
+.step:nth-child(2){border-color:var(--amber)}
+.step b{font-family:var(--display);font-weight:800;font-size:16px}
+.step b::before{counter-increment:s;content:counter(s) "  ";color:var(--flame-ink)}
+.step span{font-size:14px;line-height:1.5;color:var(--muted)}
+
+.foot-web{border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
+.foot-web b{color:var(--ink)}
+
+/* ---------- chat ---------- */
+.phone{position:sticky;top:calc(24px + env(safe-area-inset-top, 0px));height:min(820px,calc(100vh - 48px));background:var(--chat);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 70px rgba(29,23,20,.22);min-width:0;transition:box-shadow .3s}
+.phone.flash{box-shadow:0 0 0 4px var(--amber),0 30px 70px rgba(29,23,20,.22)}
+.chead{background:var(--head);color:var(--head-ink);padding:12px 14px 10px;display:flex;align-items:center;gap:10px}
+.avatar{width:42px;height:42px;border-radius:50%;background:#FFFFFF;display:grid;place-items:center;flex:0 0 auto}
+.avatar svg{width:28px;height:auto;display:block}
+.who{flex:1;min-width:0}
+.who .n{font-family:var(--display);font-stretch:108%;font-weight:800;font-size:16.5px;letter-spacing:.01em;display:flex;align-items:center;gap:6px}
+.who .s{font-size:12.5px;color:var(--head-muted);min-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who .s.typing{color:var(--amber)}
+.tick{width:15px;height:15px;flex:0 0 auto}
+.hbtn{font-size:14px;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:4px 10px;color:var(--head-ink);white-space:nowrap}
+.hbtn.wide{font-size:12px}
+.prog{display:flex;gap:4px;padding:8px 14px 9px;background:var(--head)}
+.prog .seg{flex:1;display:grid;gap:2px}
+.prog .seg i{height:3px;background:rgba(255,255,255,.14);transition:background .35s}
+.prog .seg.on i:first-child{background:var(--flame)}
+.prog .seg.on i:last-child{background:var(--amber)}
+
+.body{flex:1;overflow-y:auto;padding:14px 12px 10px;scroll-behavior:smooth;background-image:radial-gradient(var(--dots) 1px,transparent 1px);background-size:18px 18px}
+.daytag{text-align:center;margin:2px 0 12px}
+.daytag span{background:var(--panel);color:var(--muted);font-size:11.5px;padding:4px 10px;border-radius:8px}
+.row{display:flex;margin:3px 0}
+.row.me{justify-content:flex-end}
+.row.sys{justify-content:center;margin:6px 0}
+.b{max-width:85%;padding:7px 10px 6px;border-radius:12px;font-size:15px;line-height:1.42;box-shadow:0 1px 1px rgba(29,23,20,.08);overflow-wrap:anywhere;animation:pop .22s ease-out}
+.bot .b{background:var(--bot);border-top-left-radius:3px}
+.me .b{background:var(--me);border-top-right-radius:3px}
+.sys .b{background:var(--sys);color:var(--sys-ink);font-size:12.5px;font-weight:500;box-shadow:none}
+.b .t{float:right;font-size:10.5px;color:var(--muted);margin:6px 0 -3px 10px;display:flex;align-items:center;gap:2px}
+.b .t svg{width:16px;height:11px}
+.b .sign{display:block;margin-top:8px;font-weight:700}
+.b .sign small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+@keyframes pop{from{opacity:.2;transform:translateY(4px)}to{opacity:1;transform:none}}
+.dotty{display:inline-flex;gap:4px;padding:12px 14px}
+.dotty i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}
+.dotty i:nth-child(2){animation-delay:.2s}.dotty i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.3}30%{opacity:1}}
+.card{background:#FFFFFF;border-radius:8px;padding:14px 14px 12px;margin:2px 0 6px;display:grid;gap:10px}
+.card svg{width:180px;height:auto;display:block}
+.sum{margin:6px 0 2px;border-collapse:collapse;font-size:13.5px;width:100%}
+.sum td{padding:4px 0;vertical-align:top;border-top:1px solid var(--line)}
+.sum td:first-child{color:var(--muted);padding-right:14px;white-space:nowrap}
+.sum td:last-child{font-weight:500}
+
+.answers{padding:6px 10px 2px;display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;max-height:50%;overflow-y:auto}
+.answers:empty{padding:0}
+.chip{background:var(--chip);border:1.5px solid var(--amber);color:var(--ink);border-radius:999px;padding:8px 14px;font-size:14.5px;font-weight:500;transition:background .15s;animation:pop .2s ease-out;text-align:left;text-decoration:none}
+.chip:hover{background:var(--chip-hover)}
+.chip.on{background:var(--chip-on);border-color:var(--flame)}
+.chip.on::before{content:"✓ ";color:var(--flame-ink);font-weight:700}
+.chip.ghost{border-color:var(--line);color:var(--muted);font-weight:400}
+.chip.big{display:grid;gap:1px;border-radius:12px;padding:10px 14px;flex:1 1 46%;min-width:0}
+.chip.big small{font-size:12px;color:var(--muted);font-weight:400}
+.chip.big.full{flex-basis:100%}
+.chip.go{background:var(--flame);border-color:var(--flame);color:#FFFFFF;font-weight:700}
+.chip.go:disabled{opacity:.4;cursor:not-allowed}
+.submit{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(100deg,var(--flame),var(--amber));color:#FFFFFF;border-radius:14px;padding:15px 18px;font-family:var(--display);font-stretch:108%;font-weight:800;font-size:18px;box-shadow:0 8px 22px rgba(234,91,43,.35);animation:pop .25s ease-out}
+.submit:active{transform:scale(.98)}
+.submit svg{width:20px;height:20px}
+.wa{display:inline-flex;align-items:center;gap:7px}
+.wa svg{width:17px;height:17px}
+
+.composer{display:flex;gap:8px;padding:6px 10px 10px;align-items:center}
+.composer .in{flex:1;background:var(--panel);border-radius:24px;display:flex;align-items:center;padding:0 14px 0 8px;min-height:46px;box-shadow:0 1px 1px rgba(29,23,20,.08);min-width:0}
+.composer select{border:0;background:transparent;font-size:15px;color:var(--ink);padding:10px 4px;max-width:96px;outline:0;border-right:1px solid var(--line);margin-right:8px}
+.composer select option{background:var(--panel);color:var(--ink)}
+.composer input{flex:1;min-width:0;border:0;outline:0;font-size:16px;background:transparent;padding:12px 0 12px 6px}
+.composer.off{display:none}
+.send{width:46px;height:46px;border-radius:50%;background:var(--flame);display:grid;place-items:center;flex:0 0 auto}
+.send.empty{opacity:.45}
+.send svg{width:20px;height:20px}
+.err{color:var(--err);font-size:12.5px;padding:0 22px 4px}
+.err:empty{display:none}
+.foot{font-size:10.5px;color:var(--muted);text-align:center;padding:0 14px 8px}
+
+@media (max-width:1080px){ .cats{grid-template-columns:repeat(2,minmax(0,1fr))} .steps{grid-template-columns:1fr} }
+@media (max-width:860px){
+  html,body{height:100%}
+  .site{display:block;padding:0;max-width:none;height:100%}
+  .web{display:none}
+  .phone{position:static;height:100%;border-radius:0;box-shadow:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<div class="site">
+  <!-- ======================= WEBPAGE (desktop) ======================= -->
+  <div class="web">
+    <nav class="nav">
+      <span class="logo"><svg viewBox="56 228 462 116" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fit Falcon"><path fill="#F39322" d="M 231.765625 276.464844 L 170.226562 276.464844 L 170.226562 302.382812 L 231.765625 302.382812 L 231.765625 339.101562 L 259.367188 339.101562 L 259.367188 276.464844 Z M 231.765625 276.464844 "/><path fill="#EA5B2B" d="M 259.367188 262.136719 L 170.226562 262.136719 L 170.226562 236.214844 L 259.367188 236.214844 Z M 259.367188 262.136719 "/><path fill="#F39322" d="M 88.359375 276.464844 L 149.902344 276.464844 L 149.902344 302.382812 L 88.359375 302.382812 L 88.359375 339.101562 L 60.757812 339.101562 L 60.757812 276.464844 Z M 88.359375 276.464844 "/><path fill="#EA5B2B" d="M 60.761719 262.136719 L 149.902344 262.136719 L 149.902344 236.214844 L 60.761719 236.214844 Z M 60.761719 262.136719 "/><path fill="#F39322" d="M 300.921875 245.957031 L 287.074219 245.957031 L 287.074219 253.351562 L 299.691406 253.351562 L 299.691406 263.09375 L 287.074219 263.09375 L 287.074219 280.464844 L 275.570312 280.464844 L 275.570312 236.214844 L 300.921875 236.214844 Z M 300.921875 245.957031 "/><path fill="#F39322" d="M 318.78125 280.464844 L 307.277344 280.464844 L 307.277344 236.214844 L 318.78125 236.214844 Z M 318.78125 280.464844 "/><path fill="#F39322" d="M 344.011719 245.957031 L 344.011719 280.464844 L 332.507812 280.464844 L 332.507812 245.957031 L 323.058594 245.957031 L 323.058594 236.214844 L 353.457031 236.214844 L 353.457031 245.957031 Z M 344.011719 245.957031 "/><path fill="#EA5B2B" d="M 300.921875 305.042969 L 287.074219 305.042969 L 287.074219 312.441406 L 299.691406 312.441406 L 299.691406 322.179688 L 287.074219 322.179688 L 287.074219 339.550781 L 275.570312 339.550781 L 275.570312 295.304688 L 300.921875 295.304688 Z M 300.921875 305.042969 "/><path fill="#EA5B2B" d="M 328.636719 323.121094 L 323.472656 308.390625 L 318.304688 323.121094 Z M 331.6875 331.863281 L 315.253906 331.863281 L 312.613281 339.550781 L 300.347656 339.550781 L 317.191406 295.304688 L 329.75 295.304688 L 346.59375 339.550781 L 334.328125 339.550781 Z M 331.6875 331.863281 "/><path fill="#EA5B2B" d="M 362.34375 295.300781 L 362.34375 329.808594 L 376.132812 329.808594 L 376.132812 339.550781 L 350.839844 339.550781 L 350.839844 295.300781 Z M 362.34375 295.300781 "/><path fill="#EA5B2B" d="M 411.460938 310.59375 C 408.929688 307.507812 405.804688 305.960938 402.085938 305.960938 C 400.445312 305.960938 398.929688 306.261719 397.535156 306.855469 C 396.140625 307.449219 394.941406 308.261719 393.9375 309.285156 C 392.933594 310.308594 392.140625 311.527344 391.5625 312.941406 C 390.984375 314.355469 390.699219 315.878906 390.699219 317.515625 C 390.699219 319.191406 390.984375 320.734375 391.5625 322.148438 C 392.140625 323.5625 392.941406 324.789062 393.964844 325.832031 C 394.984375 326.875 396.1875 327.691406 397.5625 328.285156 C 398.941406 328.882812 400.429688 329.179688 402.027344 329.179688 C 405.523438 329.179688 408.671875 327.691406 411.460938 324.714844 L 411.460938 337.660156 L 410.34375 338.054688 C 408.671875 338.648438 407.105469 339.085938 405.65625 339.367188 C 404.203125 339.644531 402.773438 339.785156 401.359375 339.785156 C 398.457031 339.785156 395.675781 339.234375 393.015625 338.136719 C 390.355469 337.039062 388.011719 335.496094 385.984375 333.503906 C 383.953125 331.515625 382.328125 329.152344 381.101562 326.417969 C 379.871094 323.683594 379.257812 320.699219 379.257812 317.457031 C 379.257812 314.222656 379.863281 311.257812 381.070312 308.558594 C 382.28125 305.859375 383.898438 303.535156 385.925781 301.582031 C 387.953125 299.628906 390.308594 298.105469 392.988281 297.003906 C 395.664062 295.910156 398.476562 295.359375 401.414062 295.359375 C 403.089844 295.359375 404.734375 295.535156 406.355469 295.890625 C 407.972656 296.242188 409.675781 296.792969 411.460938 297.535156 Z M 411.460938 310.59375 "/><path fill="#EA5B2B" d="M 428.46875 317.25 C 428.46875 318.945312 428.789062 320.515625 429.429688 321.949219 C 430.070312 323.382812 430.941406 324.628906 432.035156 325.6875 C 433.128906 326.742188 434.40625 327.5625 435.859375 328.148438 C 437.3125 328.734375 438.847656 329.023438 440.472656 329.023438 C 442.09375 329.023438 443.632812 328.734375 445.085938 328.148438 C 446.539062 327.5625 447.820312 326.742188 448.9375 325.6875 C 450.050781 324.628906 450.925781 323.382812 451.570312 321.949219 C 452.210938 320.515625 452.53125 318.945312 452.53125 317.25 C 452.53125 315.550781 452.210938 313.984375 451.570312 312.550781 C 450.925781 311.117188 450.050781 309.871094 448.9375 308.8125 C 447.820312 307.757812 446.539062 306.9375 445.085938 306.351562 C 443.632812 305.765625 442.09375 305.472656 440.472656 305.472656 C 438.847656 305.472656 437.3125 305.765625 435.859375 306.351562 C 434.40625 306.9375 433.128906 307.757812 432.035156 308.8125 C 430.941406 309.871094 430.070312 311.117188 429.429688 312.550781 C 428.789062 313.984375 428.46875 315.550781 428.46875 317.25 M 416.863281 317.25 C 416.863281 314.078125 417.445312 311.125 418.617188 308.390625 C 419.785156 305.652344 421.410156 303.265625 423.484375 301.226562 C 425.5625 299.1875 428.042969 297.59375 430.933594 296.441406 C 433.820312 295.289062 437 294.714844 440.472656 294.714844 C 443.90625 294.714844 447.078125 295.289062 449.984375 296.441406 C 452.890625 297.59375 455.390625 299.1875 457.488281 301.226562 C 459.582031 303.265625 461.210938 305.652344 462.382812 308.390625 C 463.554688 311.125 464.140625 314.078125 464.140625 317.25 C 464.140625 320.421875 463.554688 323.375 462.382812 326.109375 C 461.210938 328.847656 459.582031 331.234375 457.488281 333.273438 C 455.390625 335.3125 452.890625 336.90625 449.984375 338.058594 C 447.078125 339.207031 443.90625 339.785156 440.472656 339.785156 C 437 339.785156 433.820312 339.207031 430.933594 338.058594 C 428.042969 336.90625 425.5625 335.3125 423.484375 333.273438 C 421.410156 331.234375 419.785156 328.847656 418.617188 326.109375 C 417.445312 323.375 416.863281 320.421875 416.863281 317.25 "/><path fill="#EA5B2B" d="M 468.570312 339.550781 L 468.570312 295.304688 L 480.074219 295.304688 L 501.316406 322.355469 L 501.316406 295.304688 L 512.761719 295.304688 L 512.761719 339.550781 L 501.316406 339.550781 L 480.074219 312.496094 L 480.074219 339.550781 Z M 468.570312 339.550781 "/><path fill="#F39322" d="M 499 240.144531 C 492.464844 240.144531 487.144531 245.464844 487.144531 252 C 487.144531 258.535156 492.464844 263.855469 499 263.855469 C 505.535156 263.855469 510.855469 258.535156 510.855469 252 C 510.855469 245.464844 505.535156 240.144531 499 240.144531 M 499 265.5 C 491.554688 265.5 485.5 259.445312 485.5 252 C 485.5 244.554688 491.554688 238.5 499 238.5 C 506.445312 238.5 512.5 244.554688 512.5 252 C 512.5 259.445312 506.445312 265.5 499 265.5 "/><path fill="#EA5B2B" d="M 492.789062 249.226562 L 490.148438 249.226562 L 490.148438 247.597656 L 497.359375 247.597656 L 497.359375 249.226562 L 494.722656 249.226562 L 494.722656 256.402344 L 492.789062 256.402344 Z M 492.789062 249.226562 "/><path fill="#EA5B2B" d="M 498.371094 247.597656 L 501.097656 247.597656 L 503.152344 253.652344 L 503.179688 253.652344 L 505.125 247.597656 L 507.851562 247.597656 L 507.851562 256.402344 L 506.039062 256.402344 L 506.039062 250.164062 L 506.015625 250.164062 L 503.855469 256.402344 L 502.363281 256.402344 L 500.207031 250.222656 L 500.183594 250.222656 L 500.183594 256.402344 L 498.371094 256.402344 Z M 498.371094 247.597656 "/></svg></span>
+      <span class="where"><span class="bars"><i></i><i></i></span>Kandivali, Mumbai <a class="mapLink" href="#" target="_blank" rel="noopener">Get directions</a></span>
+    </nav>
+
+    <header class="hero">
+      <div class="eyebrow"><span class="bars"><i></i><i></i></span>Sports &amp; fitness products and infrastructure</div>
+      <h1>Build your fitness or sports space <em>with one team.</em></h1>
+      <p>Your one-stop destination for gyms, courts, turfs, games rooms, soft play areas and sports gear. Tell us what you're planning and our team will share the right options and prices.</p>
+      <button class="cta" type="button" data-focus="1">Start your enquiry →</button>
+    </header>
+
+    <section class="sec" aria-labelledby="whatH">
+      <h2 id="whatH">What we do</h2>
+      <p class="lede">Pick a category to start your enquiry in the chat.</p>
+      <div class="cats">
+        <article class="cat">
+          <h3>Fitness Infrastructure</h3>
+          <ul><li>Gym setup, indoor &amp; outdoor</li><li>Functional training area</li><li>Gym flooring</li><li>Gym accessories</li></ul>
+          <button type="button" data-cat="Fitness Infrastructure">Enquire →</button>
+        </article>
+        <article class="cat">
+          <h3>Sports Infrastructure</h3>
+          <ul><li>Pickleball court</li><li>Football turf</li><li>Cricket turf</li><li>Padel court</li><li>Basketball court</li><li>Badminton court</li></ul>
+          <button type="button" data-cat="Sports Infrastructure">Enquire →</button>
+        </article>
+        <article class="cat">
+          <h3>Indoor Games Room</h3>
+          <ul><li>Carrom</li><li>Table tennis</li><li>Foosball</li><li>Chess</li><li>Pool table</li></ul>
+          <button type="button" data-cat="Indoor Games Room">Enquire →</button>
+        </article>
+        <article class="cat">
+          <h3>Sports Products</h3>
+          <ul><li>Cricket</li><li>Football</li><li>Badminton</li><li>Table tennis</li><li>Swimming</li><li>MMA</li><li>Pickleball</li><li>Padel</li><li>Dumbbells</li><li>Trophies</li></ul>
+          <button type="button" data-cat="Sports Products">Enquire →</button>
+        </article>
+        <article class="cat">
+          <h3>Soft Play Area</h3>
+          <p>Safe, colourful play zones for homes, preschools, malls, cafés and societies.</p>
+          <button type="button" data-cat="Soft Play Area">Enquire →</button>
+        </article>
+        <article class="cat ask">
+          <h3>Not sure where to start?</h3>
+          <p>Tell us about your space in the chat and our team will suggest what fits.</p>
+          <button type="button" data-focus="1">Open the chat →</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="howH">
+      <h2 id="howH">How it works</h2>
+      <div class="steps">
+        <div class="step"><b>Tell us your requirement</b><span>Choose a category and what you need. It takes about a minute.</span></div>
+        <div class="step"><b>Share your details</b><span>Your name, WhatsApp number and city, so we can reach you.</span></div>
+        <div class="step"><b>Get options and pricing</b><span>Our team reviews your enquiry and gets back to you with the right options.</span></div>
+      </div>
+    </section>
+
+    <footer class="foot-web">
+      <span><b>Fit Falcon</b> · Kandivali, Mumbai</span>
+      <a class="mapLink" href="#" target="_blank" rel="noopener">Get directions</a>
+    </footer>
+  </div>
+
+  <!-- ======================= CHAT ======================= -->
+  <main class="phone" id="phone" aria-label="Chat with Fit Falcon">
+    <header class="chead">
+      <div class="avatar"><svg viewBox="52 228 216 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#F39322" d="M 231.765625 276.464844 L 170.226562 276.464844 L 170.226562 302.382812 L 231.765625 302.382812 L 231.765625 339.101562 L 259.367188 339.101562 L 259.367188 276.464844 Z M 231.765625 276.464844 "/><path fill="#EA5B2B" d="M 259.367188 262.136719 L 170.226562 262.136719 L 170.226562 236.214844 L 259.367188 236.214844 Z M 259.367188 262.136719 "/><path fill="#F39322" d="M 88.359375 276.464844 L 149.902344 276.464844 L 149.902344 302.382812 L 88.359375 302.382812 L 88.359375 339.101562 L 60.757812 339.101562 L 60.757812 276.464844 Z M 88.359375 276.464844 "/><path fill="#EA5B2B" d="M 60.761719 262.136719 L 149.902344 262.136719 L 149.902344 236.214844 L 60.761719 236.214844 Z M 60.761719 262.136719 "/></svg></div>
+      <div class="who">
+        <div class="n">Fit Falcon
+          <svg class="tick" viewBox="0 0 24 24" aria-label="Verified"><circle cx="12" cy="12" r="11" fill="#F39322"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#1D1714" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="s" id="status">Kandivali, Mumbai · online</div>
+      </div>
+      <button class="hbtn" id="restart" type="button" title="Start over" aria-label="Start over">↺</button>
+    </header>
+    <div class="prog" id="prog" aria-hidden="true"></div>
+    <div class="body" id="body" aria-live="polite">
+      <div class="daytag"><span>Today</span></div>
+    </div>
+    <div class="answers" id="answers"></div>
+    <div class="err" id="err"></div>
+    <form class="composer off" id="composer" autocomplete="on">
+      <div class="in">
+        <select id="cc" aria-label="Country code" hidden></select>
+        <input id="inp" aria-label="Your answer">
+      </div>
+      <button class="send empty" id="send" aria-label="Send"><svg viewBox="0 0 24 24"><path d="M3 20.5l18-8.5L3 3.5l2.5 7L15 12l-9.5 1.5z" fill="#FFFFFF"/></svg></button>
+    </form>
+    <div class="foot">Your details are used only to reply to your enquiry.</div>
+  </main>
+</div>
+
+<script>
+/* =====================================================================
+   CONFIG · Fit Falcon
+   ===================================================================== */
+const CONFIG = {
+  scriptUrl: 'https://script.google.com/macros/s/AKfycbw6xQDErvh2zS95fsLTKDJwj9XiTm5bHqf9M3krJ00bZE5XGEciyLxDoX0qj3qqYWBf3w/exec',           // Lead Desk Apps Script web app URL. Empty = demo mode (nothing is sent)
+  sharedKey: '',
+  whatsApp: '918169847702',            // optional: Fit Falcon WhatsApp number (digits with country code). Shows a "Chat on WhatsApp" button after submit
+  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Fit+Falcon+Kandivali+Mumbai'
+};
+
+/* =====================================================================
+   OPTIONS
+   ===================================================================== */
+const CATS = [
+  { v:'Fitness Infrastructure', k:'fitness', sub:'Gyms & flooring' },
+  { v:'Sports Infrastructure',  k:'sports',  sub:'Courts and turfs' },
+  { v:'Indoor Games Room',      k:'games',   sub:'Carrom, TT, pool' },
+  { v:'Sports Products',        k:'products',sub:'Gear & trophies' },
+  { v:'Soft Play Area',         k:'soft',    sub:'Kids play zones', full:true }
+];
+const ITEMS = {
+  fitness:  { ask:'What do you need? (pick any)',
+              opts:['Gym Setup (Indoor)','Gym Setup (Outdoor)','Functional Training Area','Gym Flooring','Gym Accessories','Any Other'] },
+  sports:   { ask:'Which facility? (pick any)',
+              opts:['Pickleball Court','Football Turf','Cricket Turf','Padel Court','Basketball Court','Badminton Court','Any Other'] },
+  games:    { ask:'Which games? (pick any)',
+              opts:['Carrom','Table Tennis','Foosball','Chess','Pool Table','Any Other'] },
+  products: { ask:'Which sport? (pick any)',
+              opts:['Cricket','Football','Badminton','Table Tennis','Swimming','MMA','Trophies','Pickleball','Padel','Dumbbells','Any Other'] }
+};
+const SITES = {
+  fitness:  ['Home','Society / clubhouse','Commercial gym','Corporate office','School / college','Hotel / resort','Other'],
+  sports:   ['Society / clubhouse','Academy / club','School / college','Commercial venue','Farmhouse / private','Other'],
+  games:    ['Home','Society / clubhouse','Corporate office','Café / gaming zone','School / college','Other'],
+  soft:     ['Home','Preschool / school','Mall / commercial','Restaurant / café','Society / clubhouse','Other'],
+  products: ['Personal use','School / college','Academy / club','Corporate / event','Dealer / reseller']
+};
+const SIZES = {
+  fitness: ['Under 500 sq ft','500 – 1,500 sq ft','1,500 – 5,000 sq ft','Above 5,000 sq ft','Not sure'],
+  sports:  ['Under 2,000 sq ft','2,000 – 6,000 sq ft','6,000 – 15,000 sq ft','Above 15,000 sq ft','Not sure'],
+  games:   ['Under 300 sq ft','300 – 800 sq ft','Above 800 sq ft','Not sure'],
+  soft:    ['Under 300 sq ft','300 – 1,000 sq ft','Above 1,000 sq ft','Not sure'],
+  products:['1 – 2 pieces','3 – 10 pieces','Bulk (10+)']
+};
+const WHEN = ['Immediately','This month','1 – 3 months','Just exploring'];
+const CITIES = ['Mumbai','Thane','Navi Mumbai','Pune'];
+const COUNTRIES = [
+  ['91','India'],['971','UAE'],['966','Saudi Arabia'],['974','Qatar'],['968','Oman'],['965','Kuwait'],['973','Bahrain'],
+  ['977','Nepal'],['94','Sri Lanka'],['880','Bangladesh'],['65','Singapore'],['60','Malaysia'],['1','USA / Canada'],
+  ['44','UK'],['61','Australia'],['64','New Zealand'],['49','Germany'],['27','South Africa'],['254','Kenya']
+];
+
+/* =====================================================================
+   FLOW · requirement first, contact details after
+   ===================================================================== */
+const cat = () => (CATS.find(c => c.v === S.a.category) || {}).k;
+const isProducts = () => cat() === 'products';
+const STEPS = [
+  { id:'category', type:'cats',  label:'Category',    ask:()=>'What are you looking for?' },
+  { id:'items',    type:'multi', label:'Requirement', ask:()=>ITEMS[cat()].ask, opts:()=>ITEMS[cat()].opts, skip:()=>!ITEMS[cat()] },
+  { id:'other',    type:'text',  label:'Other requirement', ask:()=>'What else do you need?', ph:'Type here…',
+    skip:()=>!(S.a.items||[]).includes('Any Other') },
+  { id:'site',     type:'chips', label:'Site / buyer', ask:()=>isProducts() ? 'Who is it for?' : 'Where will it be set up?', opts:()=>SITES[cat()] },
+  { id:'size',     type:'chips', label:'Space / quantity', ask:()=>isProducts() ? 'How many pieces?' : 'How much space?', opts:()=>SIZES[cat()] },
+  { id:'timeline', type:'chips', label:'Timeline', ask:()=>'When do you need it?', opts:()=>WHEN },
+  { id:'name',     type:'text',  label:'Name', ask:()=>'Almost done! Your name?', ph:'Your name', ac:'name' },
+  { id:'mobile',   type:'tel',   label:'WhatsApp', ask:()=>`Thanks ${S.a.name}! Your WhatsApp number?` },
+  { id:'city',     type:'city',  label:'City', ask:()=>'Your city?', ph:'Type your city…', ac:'address-level2' },
+  { id:'note',     type:'note',  label:'Note', ask:()=>'Anything else? (optional)', ph:'Budget, details…' },
+  { id:'review',   type:'review',label:'Review' },
+  { id:'done',     type:'done',  label:'Done' }
+];
+
+/* =====================================================================
+   CAMPAIGN TRACKING
+   Links: ?src=google  ?src=instagram  ?src=facebook  (+ &campaign=diwali)
+   UTM tags (utm_source / utm_medium / utm_campaign) also work, as do ad click ids.
+   Without tags, the page falls back to the referring site.
+   ===================================================================== */
+const params = new URLSearchParams(location.search);
+const ALIAS = { ig:'instagram', insta:'instagram', fb:'facebook', meta:'facebook', gmb:'google', gbp:'google', 'google-profile':'google', yt:'youtube', wa:'whatsapp' };
+function detectSource(){
+  const low = s => String(s || '').trim().toLowerCase();
+  let host = ''; try { host = new URL(document.referrer).hostname.replace(/^www\./,''); } catch(e){}
+  if (host === location.hostname) host = '';
+  let source = low(params.get('src') || params.get('utm_source'));
+  let medium = low(params.get('medium') || params.get('utm_medium'));
+  const campaign = params.get('campaign') || params.get('utm_campaign') || '';
+  if (!source){
+    if (/instagram\./.test(host)) source = 'instagram';
+    else if (/(facebook|fb)\.(com|me)/.test(host)) source = 'facebook';
+    else if (/google\./.test(host)) source = 'google';
+    else if (/youtube\.|youtu\.be/.test(host)) source = 'youtube';
+    else if (params.get('gclid')) source = 'google';
+    else if (params.get('fbclid')) source = 'facebook';
+    else if (host) source = host;
+    else source = 'direct';
+    if (!medium) medium = params.get('gclid') ? 'paid' : (host ? 'referral' : '');
+  }
+  if (!medium && (params.get('gclid') || params.get('fbclid'))) medium = 'paid';
+  source = ALIAS[source] || source;
+  const t = { source, medium, campaign, referrer: host, landing: location.pathname, at: new Date().toISOString() };
+  // a direct revisit keeps the last tagged visit from the past 30 days
+  try {
+    const prev = JSON.parse(localStorage.getItem('ff_touch') || 'null');
+    if (source === 'direct' && prev && Date.now() - Date.parse(prev.at) < 30 * 864e5) return prev;
+    if (source !== 'direct') localStorage.setItem('ff_touch', JSON.stringify(t));
+  } catch(e){}
+  return t;
+}
+const TOUCH = detectSource();
+
+/* =====================================================================
+   STATE
+   ===================================================================== */
+const KEY = 'fitfalcon_chatlead_v2';
+let S = load() || fresh();
+function fresh(){
+  return { id:'FF-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,5).toUpperCase(),
+    step:0, asked:-1, a:{}, log:[], done:false, mobileSaved:false, touch:TOUCH };
+}
+function load(){ try { const s = JSON.parse(localStorage.getItem(KEY)); return s && s.id ? s : null; } catch(e){ return null; } }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+
+/* =====================================================================
+   HELPERS
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nl = s => esc(s).replace(/\n/g, '<br>');
+const now = () => new Date().toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const phoneText = () => S.a.mobile ? `+${S.a.cc} ${S.a.cc === '91' ? S.a.mobile.slice(0,5) + ' ' + S.a.mobile.slice(5) : S.a.mobile}` : '';
+const requirementText = () => [...(S.a.items || []).filter(x => x !== 'Any Other'), S.a.other].filter(Boolean).join(', ');
+const TICKS = '<svg viewBox="0 0 16 11"><path d="M1 6l3 3 6-7M6 9l1 1 7-8" stroke="#34B7F1" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const WA_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 00-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1012 2.5z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M8.6 7.6c.2-.4.5-.4.8-.4h.5c.2 0 .4.1.5.4l.7 1.7c.1.2 0 .5-.1.7l-.5.6c-.1.2-.1.4 0 .5.7 1.2 1.6 2.1 2.9 2.7.2.1.4.1.5-.1l.6-.7c.2-.2.4-.3.7-.2l1.6.8c.3.1.4.3.4.6 0 .6-.3 1.4-.9 1.7-.6.4-1.6.5-3.2-.2-1.9-.8-3.5-2.6-4.1-3.8-.6-1.1-.6-2.2-.2-2.9z" fill="currentColor"/></svg>';
+const SEND_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20.5l18-8.5L3 3.5l2.5 7L15 12l-9.5 1.5z" fill="#FFFFFF"/></svg>';
+const LOGO_CARD = `<svg viewBox="56 228 462 116" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fit Falcon"><path fill="#F39322" d="M 231.765625 276.464844 L 170.226562 276.464844 L 170.226562 302.382812 L 231.765625 302.382812 L 231.765625 339.101562 L 259.367188 339.101562 L 259.367188 276.464844 Z M 231.765625 276.464844 "/><path fill="#EA5B2B" d="M 259.367188 262.136719 L 170.226562 262.136719 L 170.226562 236.214844 L 259.367188 236.214844 Z M 259.367188 262.136719 "/><path fill="#F39322" d="M 88.359375 276.464844 L 149.902344 276.464844 L 149.902344 302.382812 L 88.359375 302.382812 L 88.359375 339.101562 L 60.757812 339.101562 L 60.757812 276.464844 Z M 88.359375 276.464844 "/><path fill="#EA5B2B" d="M 60.761719 262.136719 L 149.902344 262.136719 L 149.902344 236.214844 L 60.761719 236.214844 Z M 60.761719 262.136719 "/><path fill="#F39322" d="M 300.921875 245.957031 L 287.074219 245.957031 L 287.074219 253.351562 L 299.691406 253.351562 L 299.691406 263.09375 L 287.074219 263.09375 L 287.074219 280.464844 L 275.570312 280.464844 L 275.570312 236.214844 L 300.921875 236.214844 Z M 300.921875 245.957031 "/><path fill="#F39322" d="M 318.78125 280.464844 L 307.277344 280.464844 L 307.277344 236.214844 L 318.78125 236.214844 Z M 318.78125 280.464844 "/><path fill="#F39322" d="M 344.011719 245.957031 L 344.011719 280.464844 L 332.507812 280.464844 L 332.507812 245.957031 L 323.058594 245.957031 L 323.058594 236.214844 L 353.457031 236.214844 L 353.457031 245.957031 Z M 344.011719 245.957031 "/><path fill="#EA5B2B" d="M 300.921875 305.042969 L 287.074219 305.042969 L 287.074219 312.441406 L 299.691406 312.441406 L 299.691406 322.179688 L 287.074219 322.179688 L 287.074219 339.550781 L 275.570312 339.550781 L 275.570312 295.304688 L 300.921875 295.304688 Z M 300.921875 305.042969 "/><path fill="#EA5B2B" d="M 328.636719 323.121094 L 323.472656 308.390625 L 318.304688 323.121094 Z M 331.6875 331.863281 L 315.253906 331.863281 L 312.613281 339.550781 L 300.347656 339.550781 L 317.191406 295.304688 L 329.75 295.304688 L 346.59375 339.550781 L 334.328125 339.550781 Z M 331.6875 331.863281 "/><path fill="#EA5B2B" d="M 362.34375 295.300781 L 362.34375 329.808594 L 376.132812 329.808594 L 376.132812 339.550781 L 350.839844 339.550781 L 350.839844 295.300781 Z M 362.34375 295.300781 "/><path fill="#EA5B2B" d="M 411.460938 310.59375 C 408.929688 307.507812 405.804688 305.960938 402.085938 305.960938 C 400.445312 305.960938 398.929688 306.261719 397.535156 306.855469 C 396.140625 307.449219 394.941406 308.261719 393.9375 309.285156 C 392.933594 310.308594 392.140625 311.527344 391.5625 312.941406 C 390.984375 314.355469 390.699219 315.878906 390.699219 317.515625 C 390.699219 319.191406 390.984375 320.734375 391.5625 322.148438 C 392.140625 323.5625 392.941406 324.789062 393.964844 325.832031 C 394.984375 326.875 396.1875 327.691406 397.5625 328.285156 C 398.941406 328.882812 400.429688 329.179688 402.027344 329.179688 C 405.523438 329.179688 408.671875 327.691406 411.460938 324.714844 L 411.460938 337.660156 L 410.34375 338.054688 C 408.671875 338.648438 407.105469 339.085938 405.65625 339.367188 C 404.203125 339.644531 402.773438 339.785156 401.359375 339.785156 C 398.457031 339.785156 395.675781 339.234375 393.015625 338.136719 C 390.355469 337.039062 388.011719 335.496094 385.984375 333.503906 C 383.953125 331.515625 382.328125 329.152344 381.101562 326.417969 C 379.871094 323.683594 379.257812 320.699219 379.257812 317.457031 C 379.257812 314.222656 379.863281 311.257812 381.070312 308.558594 C 382.28125 305.859375 383.898438 303.535156 385.925781 301.582031 C 387.953125 299.628906 390.308594 298.105469 392.988281 297.003906 C 395.664062 295.910156 398.476562 295.359375 401.414062 295.359375 C 403.089844 295.359375 404.734375 295.535156 406.355469 295.890625 C 407.972656 296.242188 409.675781 296.792969 411.460938 297.535156 Z M 411.460938 310.59375 "/><path fill="#EA5B2B" d="M 428.46875 317.25 C 428.46875 318.945312 428.789062 320.515625 429.429688 321.949219 C 430.070312 323.382812 430.941406 324.628906 432.035156 325.6875 C 433.128906 326.742188 434.40625 327.5625 435.859375 328.148438 C 437.3125 328.734375 438.847656 329.023438 440.472656 329.023438 C 442.09375 329.023438 443.632812 328.734375 445.085938 328.148438 C 446.539062 327.5625 447.820312 326.742188 448.9375 325.6875 C 450.050781 324.628906 450.925781 323.382812 451.570312 321.949219 C 452.210938 320.515625 452.53125 318.945312 452.53125 317.25 C 452.53125 315.550781 452.210938 313.984375 451.570312 312.550781 C 450.925781 311.117188 450.050781 309.871094 448.9375 308.8125 C 447.820312 307.757812 446.539062 306.9375 445.085938 306.351562 C 443.632812 305.765625 442.09375 305.472656 440.472656 305.472656 C 438.847656 305.472656 437.3125 305.765625 435.859375 306.351562 C 434.40625 306.9375 433.128906 307.757812 432.035156 308.8125 C 430.941406 309.871094 430.070312 311.117188 429.429688 312.550781 C 428.789062 313.984375 428.46875 315.550781 428.46875 317.25 M 416.863281 317.25 C 416.863281 314.078125 417.445312 311.125 418.617188 308.390625 C 419.785156 305.652344 421.410156 303.265625 423.484375 301.226562 C 425.5625 299.1875 428.042969 297.59375 430.933594 296.441406 C 433.820312 295.289062 437 294.714844 440.472656 294.714844 C 443.90625 294.714844 447.078125 295.289062 449.984375 296.441406 C 452.890625 297.59375 455.390625 299.1875 457.488281 301.226562 C 459.582031 303.265625 461.210938 305.652344 462.382812 308.390625 C 463.554688 311.125 464.140625 314.078125 464.140625 317.25 C 464.140625 320.421875 463.554688 323.375 462.382812 326.109375 C 461.210938 328.847656 459.582031 331.234375 457.488281 333.273438 C 455.390625 335.3125 452.890625 336.90625 449.984375 338.058594 C 447.078125 339.207031 443.90625 339.785156 440.472656 339.785156 C 437 339.785156 433.820312 339.207031 430.933594 338.058594 C 428.042969 336.90625 425.5625 335.3125 423.484375 333.273438 C 421.410156 331.234375 419.785156 328.847656 418.617188 326.109375 C 417.445312 323.375 416.863281 320.421875 416.863281 317.25 "/><path fill="#EA5B2B" d="M 468.570312 339.550781 L 468.570312 295.304688 L 480.074219 295.304688 L 501.316406 322.355469 L 501.316406 295.304688 L 512.761719 295.304688 L 512.761719 339.550781 L 501.316406 339.550781 L 480.074219 312.496094 L 480.074219 339.550781 Z M 468.570312 339.550781 "/><path fill="#F39322" d="M 499 240.144531 C 492.464844 240.144531 487.144531 245.464844 487.144531 252 C 487.144531 258.535156 492.464844 263.855469 499 263.855469 C 505.535156 263.855469 510.855469 258.535156 510.855469 252 C 510.855469 245.464844 505.535156 240.144531 499 240.144531 M 499 265.5 C 491.554688 265.5 485.5 259.445312 485.5 252 C 485.5 244.554688 491.554688 238.5 499 238.5 C 506.445312 238.5 512.5 244.554688 512.5 252 C 512.5 259.445312 506.445312 265.5 499 265.5 "/><path fill="#EA5B2B" d="M 492.789062 249.226562 L 490.148438 249.226562 L 490.148438 247.597656 L 497.359375 247.597656 L 497.359375 249.226562 L 494.722656 249.226562 L 494.722656 256.402344 L 492.789062 256.402344 Z M 492.789062 249.226562 "/><path fill="#EA5B2B" d="M 498.371094 247.597656 L 501.097656 247.597656 L 503.152344 253.652344 L 503.179688 253.652344 L 505.125 247.597656 L 507.851562 247.597656 L 507.851562 256.402344 L 506.039062 256.402344 L 506.039062 250.164062 L 506.015625 250.164062 L 503.855469 256.402344 L 502.363281 256.402344 L 500.207031 250.222656 L 500.183594 250.222656 L 500.183594 256.402344 L 498.371094 256.402344 Z M 498.371094 247.597656 "/></svg>`;
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+const body = $('body'), ans = $('answers'), inp = $('inp'), sendBtn = $('send'), err = $('err'), composer = $('composer'), ccSel = $('cc');
+ccSel.innerHTML = COUNTRIES.map(([c, n]) => `<option value="${c}">+${c} ${n}</option>`).join('');
+function bubble(who, html, o={}){
+  const row = document.createElement('div');
+  row.className = 'row ' + who;
+  const time = o.time || now();
+  row.innerHTML = `<div class="b">${html}${who === 'sys' ? '' : `<span class="t">${time}${who === 'me' ? TICKS : ''}</span>`}</div>`;
+  body.appendChild(row);
+  if (!o.replay){ S.log.push({ who, html, time }); save(); }
+  body.scrollTop = body.scrollHeight;
+}
+async function botSay(html){
+  const st = $('status'); st.textContent = 'typing…'; st.classList.add('typing');
+  const row = document.createElement('div'); row.className = 'row bot';
+  row.innerHTML = '<div class="b" style="padding:0"><span class="dotty"><i></i><i></i><i></i></span></div>';
+  body.appendChild(row); body.scrollTop = body.scrollHeight;
+  await sleep(Math.min(250 + html.replace(/<[^>]+>/g,'').length * 5, 650));
+  row.remove(); st.textContent = 'Kandivali, Mumbai · online'; st.classList.remove('typing');
+  bubble('bot', html);
+}
+function clearInput(){
+  ans.innerHTML = ''; err.textContent = '';
+  inp.value = ''; sendBtn.classList.add('empty'); composer.classList.add('off'); ccSel.hidden = true;
+}
+function chip(html, fn, cls){
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'chip ' + (cls || '');
+  b.innerHTML = html; b.onclick = fn; ans.appendChild(b); return b;
+}
+function progress(){
+  const qs = STEPS.filter(s => !['review','done'].includes(s.type) && !(s.skip && s.skip()));
+  const doneCount = S.done ? qs.length : qs.filter(s => STEPS.indexOf(s) < S.step).length;
+  $('prog').innerHTML = qs.map((_, i) => `<span class="seg ${i < doneCount ? 'on' : ''}"><i></i><i></i></span>`).join('');
+}
+
+/* =====================================================================
+   ENGINE
+   ===================================================================== */
+function nextIndex(i){ for (let j = i; j < STEPS.length; j++) if (!(STEPS[j].skip && STEPS[j].skip())) return j; return STEPS.length - 1; }
+let busy = false;
+async function go(i){
+  busy = true;
+  S.step = nextIndex(i); save(); progress(); clearInput();
+  const st = STEPS[S.step];
+  if (S.asked !== S.step){
+    if (st.type === 'review') await botSay(reviewHtml());
+    else if (st.type === 'done') await thanks();
+    else await botSay(nl(st.ask()));
+    S.asked = S.step; save();
+  }
+  busy = false;
+  showInput(st);
+}
+function openText(st, ph, mode){
+  composer.classList.remove('off');
+  inp.inputMode = mode || 'text';
+  inp.maxLength = st.type === 'tel' ? 16 : (st.type === 'note' || st.id === 'other' ? 300 : 60);
+  inp.autocomplete = st.ac || (st.type === 'tel' ? 'tel-national' : 'off');
+  inp.placeholder = ph;
+  sendBtn.classList.add('empty');
+  if (window.matchMedia('(min-width: 861px)').matches || st.type !== 'text') setTimeout(() => inp.focus({ preventScroll:true }), 50);
+}
+function showInput(st){
+  clearInput();
+  if (st.type === 'cats'){
+    CATS.forEach(c => chip(`${esc(c.v)}<small>${esc(c.sub)}</small>`, () => answer(st, c.v), 'big' + (c.full ? ' full' : '')));
+  } else if (st.type === 'multi'){
+    const picked = new Set(S.a[st.id] || []);
+    const go = document.createElement('button');
+    st.opts().forEach(o => {
+      const b = chip(esc(o), () => { picked.has(o) ? picked.delete(o) : picked.add(o); b.classList.toggle('on'); go.disabled = !picked.size; }, picked.has(o) ? 'on' : '');
+    });
+    go.type = 'button'; go.className = 'chip go'; go.textContent = 'Continue →'; go.disabled = !picked.size;
+    go.onclick = () => answer(st, st.opts().filter(o => picked.has(o)));
+    ans.appendChild(go);
+  } else if (st.type === 'chips'){
+    st.opts().forEach(o => chip(esc(o), () => answer(st, o)));
+  } else if (st.type === 'text'){
+    openText(st, st.ph || 'Type your answer…');
+  } else if (st.type === 'tel'){
+    ccSel.hidden = false; ccSel.value = S.a.cc || '91';
+    openText(st, 'WhatsApp number', 'numeric');
+  } else if (st.type === 'city'){
+    CITIES.forEach(c => chip(esc(c), () => answer(st, c)));
+    openText(st, st.ph);
+  } else if (st.type === 'note'){
+    chip('Skip', () => answer(st, ''), 'ghost');
+    openText(st, st.ph);
+  } else if (st.type === 'review'){
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'submit';
+    b.innerHTML = SEND_ICON + '<span>Submit enquiry</span>';
+    b.onclick = () => answer(st, 'submit');
+    ans.appendChild(b);
+    chip('Start over', restart, 'ghost');
+  } else if (st.type === 'done'){
+    endButtons();
+  }
+  body.scrollTop = body.scrollHeight;
+}
+/* Autofill and keyboard suggestion bars don't always fire 'input', so the send button
+   is never disabled: it only dims, and submit always reads the box directly. */
+const syncSend = () => { sendBtn.classList.toggle('empty', !inp.value.trim()); if (inp.value.trim()) err.textContent = ''; };
+['input','change','keyup','compositionend','blur'].forEach(ev => inp.addEventListener(ev, syncSend));
+composer.addEventListener('submit', e => {
+  e.preventDefault();
+  if (composer.classList.contains('off')) return;
+  const v = inp.value.trim();
+  if (!v){ err.textContent = 'Please type your answer.'; inp.focus(); return; }
+  answer(STEPS[S.step], v);
+});
+
+async function answer(st, v){
+  if (busy) return;
+  err.textContent = '';
+  let shown = v;
+  if (st.id === 'name'){
+    v = v.replace(/\s+/g, ' ').trim();
+    if (v.length < 2 || /\d{3,}/.test(v)){ err.textContent = 'Please enter your name.'; return; }
+    v = v.replace(/(^|\s)\S/g, c => c.toUpperCase()); shown = v;
+  }
+  if (st.type === 'tel'){
+    const cc = ccSel.value;
+    let d = v.replace(/\D/g, '');
+    if (d.startsWith(cc) && d.length > (cc === '91' ? 10 : 9)) d = d.slice(cc.length);
+    d = d.replace(/^0+/, '');
+    const ok = cc === '91' ? /^[6-9]\d{9}$/.test(d) : /^\d{6,13}$/.test(d);
+    if (!ok){ err.textContent = cc === '91' ? 'Enter a valid 10-digit number.' : 'Enter a valid number.'; return; }
+    v = d; S.a.cc = cc; S.a.mobile = d; shown = phoneText();
+  }
+  if (st.type === 'city' || st.id === 'other'){
+    v = v.replace(/\s+/g, ' ').trim();
+    if (v.length < 2){ err.textContent = 'Please type a bit more.'; return; }
+    if (st.type === 'city') v = v.replace(/(^|\s)\S/g, c => c.toUpperCase());
+    shown = v;
+  }
+  if (st.type === 'multi') shown = v.join(', ');
+  if (st.type === 'note' && !v) shown = 'Skip';
+  if (st.type === 'review') shown = 'Submit enquiry';
+  clearInput();
+  bubble('me', esc(shown));
+
+  if (st.id === 'category' && S.a.category !== v){ ['items','other','site','size','timeline'].forEach(k => delete S.a[k]); }
+  if (st.id === 'items' && !v.includes('Any Other')) delete S.a.other;
+  if (st.type !== 'review' && st.type !== 'tel') S.a[st.id] = v;
+  save();
+
+  if (st.type === 'tel'){ S.mobileSaved = true; bubble('sys', '✓ Number saved'); }
+  if (st.type === 'review'){ S.done = true; save(); send('complete'); }
+  else if (S.mobileSaved) send('partial', st.label);
+  go(S.step + 1);
+}
+
+function reviewHtml(){
+  const rows = [['Category', S.a.category], ['Need', requirementText()],
+    [isProducts() ? 'For' : 'Site', S.a.site], [isProducts() ? 'Qty' : 'Space', S.a.size],
+    ['When', S.a.timeline], ['Name', S.a.name], ['WhatsApp', phoneText()], ['City', S.a.city]];
+  if (S.a.note) rows.push(['Note', S.a.note]);
+  return 'Your enquiry:<table class="sum">' +
+    rows.filter(r => r[1]).map(([a,b]) => `<tr><td>${esc(a)}</td><td>${esc(b)}</td></tr>`).join('') + '</table>';
+}
+async function thanks(){
+  await botSay(`<b>Thank you, ${esc(S.a.name)}! 🙏</b><br>Our team will get in touch shortly with options and pricing.<span class="sign">Fit Falcon<small>Kandivali, Mumbai</small></span>`);
+}
+function endButtons(){
+  clearInput();
+  const wa = String(CONFIG.whatsApp || '').replace(/\D/g, '');
+  if (wa){
+    const msg = [`Hi Fit Falcon, I'm ${S.a.name} from ${S.a.city}.`, `Enquiry: ${S.a.category}${requirementText() ? ' – ' + requirementText() : ''}`, `Ref: ${S.id}`].join('\n');
+    const a = document.createElement('a'); a.className = 'chip wa'; a.target = '_blank'; a.rel = 'noopener';
+    a.href = `https://wa.me/${wa}?text=${encodeURIComponent(msg)}`; a.innerHTML = WA_ICON + 'Chat on WhatsApp';
+    ans.appendChild(a);
+  }
+  const m = document.createElement('a'); m.className = 'chip'; m.href = CONFIG.mapsUrl; m.target = '_blank'; m.rel = 'noopener'; m.textContent = 'Get directions';
+  ans.appendChild(m);
+  chip('New enquiry', restart, 'ghost');
+}
+
+/* =====================================================================
+   SCORE + SEND (Lead Desk Google Sheet)
+   ===================================================================== */
+function scoreOf(){
+  let s = ({ sports:3, fitness:3, soft:2, games:2, products:1 })[cat()] || 0;
+  s += ({ 'Immediately':3, 'This month':2, '1 – 3 months':1 })[S.a.timeline] || 0;
+  const sizes = SIZES[cat()] || [], i = sizes.indexOf(S.a.size);
+  if (isProducts()) s += i === 2 ? 3 : i === 1 ? 1 : 0;
+  else if (i >= 0 && i >= sizes.length - 3 && !/Not sure/.test(S.a.size)) s += i === sizes.length - 2 ? 2 : 1;
+  if (S.a.site && !['Home','Personal use'].includes(S.a.site)) s += 1;
+  return s >= 7 ? 'Hot' : s >= 4 ? 'Warm' : 'Cold';
+}
+function payload(stage, lastStep){
+  const sc = stage === 'complete' ? scoreOf() : '';
+  const t = S.touch || {};
+  return { key: CONFIG.sharedKey, stage, lead_id: S.id,
+    name: S.a.name || '', country_code: S.a.cc || '', mobile: S.a.mobile || '', city: S.a.city || '',
+    category: S.a.category || '', requirement: requirementText(), site: S.a.site || '', size: S.a.size || '',
+    timeline: S.a.timeline || '', note: S.a.note || '',
+    source: t.source || 'direct', medium: t.medium || '', campaign: t.campaign || '', referrer: t.referrer || '', landing_page: t.landing || '',
+    score: sc, priority: sc ? ({ Hot:1, Warm:2, Cold:3 })[sc] : 2, last_step: stage === 'complete' ? 'Submitted' : lastStep };
+}
+function send(stage, lastStep){
+  if (!CONFIG.scriptUrl) return;   // demo mode
+  try { fetch(CONFIG.scriptUrl, { method:'POST', mode:'no-cors', keepalive:true,
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(payload(stage, lastStep)) }); } catch(e){}
+}
+
+/* =====================================================================
+   PAGE ↔ CHAT
+   ===================================================================== */
+function flashChat(){
+  const p = $('phone'); p.classList.add('flash'); setTimeout(() => p.classList.remove('flash'), 900);
+  if (!composer.classList.contains('off')) inp.focus({ preventScroll:true });
+}
+document.querySelectorAll('[data-cat]').forEach(b => b.addEventListener('click', () => {
+  const st = STEPS[S.step];
+  if (st.id === 'category' && S.asked === S.step && !busy) answer(st, b.dataset.cat);
+  flashChat();
+}));
+document.querySelectorAll('[data-focus]').forEach(b => b.addEventListener('click', flashChat));
+document.querySelectorAll('.mapLink').forEach(a => a.href = CONFIG.mapsUrl);
+
+let armed = 0;
+function restart(){
+  const btn = this instanceof HTMLElement ? this : $('restart');
+  if (!S.done && S.log.length > 6 && Date.now() - armed > 3000){
+    armed = Date.now(); const old = btn.textContent; btn.textContent = 'Tap again to start over'; btn.classList.add('wide');
+    setTimeout(() => { btn.textContent = old; btn.classList.remove('wide'); }, 3000); return;
+  }
+  armed = 0;
+  try { localStorage.removeItem(KEY); } catch(e){}
+  S = fresh();
+  body.querySelectorAll('.row').forEach(r => r.remove());
+  $('restart').textContent = '↺'; $('restart').classList.remove('wide');
+  boot();
+}
+$('restart').onclick = restart;
+
+async function boot(){
+  progress();
+  if (S.log.length){
+    S.log.forEach(m => bubble(m.who, m.html, { replay:true, time:m.time }));
+    if (S.asked === S.step) showInput(STEPS[S.step]); else go(S.step);
+    return;
+  }
+  busy = true;
+  await botSay(`<div class="card">${LOGO_CARD}</div>Namaste 🙏 Welcome to <b>Fit Falcon</b>, Kandivali.<br>Sports &amp; fitness products and infrastructure.`);
+  busy = false;
+  go(0);
+}
+boot();
+</script>
+
+</body></html>

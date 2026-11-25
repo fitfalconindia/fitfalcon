@@ -164,6 +164,13 @@ a{color:inherit}
 .wa{display:inline-flex;align-items:center;gap:7px}
 .wa svg{width:17px;height:17px}
 
+.contact{width:100%;display:grid;gap:8px;animation:pop .2s ease-out}
+.contact input,.contact select{background:var(--panel);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;font-size:16px;padding:11px 12px;outline:0;min-width:0}
+.contact input:focus,.contact select:focus{border-color:var(--amber)}
+.contact .tel{display:flex;gap:8px}
+.contact .tel select{flex:0 0 auto;max-width:110px;padding:11px 6px}
+.contact .tel input{flex:1}
+.contact .chip.go{justify-self:end}
 .composer{display:flex;gap:8px;padding:6px 10px 10px;align-items:center}
 .composer .in{flex:1;background:var(--panel);border-radius:24px;display:flex;align-items:center;padding:0 14px 0 8px;min-height:46px;box-shadow:0 1px 1px rgba(29,23,20,.08);min-width:0}
 .composer select{border:0;background:transparent;font-size:15px;color:var(--ink);padding:10px 4px;max-width:96px;outline:0;border-right:1px solid var(--line);margin-right:8px}
@@ -316,20 +323,6 @@ const ITEMS = {
   products: { ask:'Which sport? (pick any)',
               opts:['Cricket','Football','Badminton','Table Tennis','Swimming','MMA','Trophies','Pickleball','Padel','Dumbbells','Any Other'] }
 };
-const SITES = {
-  fitness:  ['Home','Society / clubhouse','Commercial gym','Corporate office','School / college','Hotel / resort','Other'],
-  sports:   ['Society / clubhouse','Academy / club','School / college','Commercial venue','Farmhouse / private','Other'],
-  games:    ['Home','Society / clubhouse','Corporate office','Café / gaming zone','School / college','Other'],
-  soft:     ['Home','Preschool / school','Mall / commercial','Restaurant / café','Society / clubhouse','Other'],
-  products: ['Personal use','School / college','Academy / club','Corporate / event','Dealer / reseller']
-};
-const SIZES = {
-  fitness: ['Under 500 sq ft','500 – 1,500 sq ft','1,500 – 5,000 sq ft','Above 5,000 sq ft','Not sure'],
-  sports:  ['Under 2,000 sq ft','2,000 – 6,000 sq ft','6,000 – 15,000 sq ft','Above 15,000 sq ft','Not sure'],
-  games:   ['Under 300 sq ft','300 – 800 sq ft','Above 800 sq ft','Not sure'],
-  soft:    ['Under 300 sq ft','300 – 1,000 sq ft','Above 1,000 sq ft','Not sure'],
-  products:['1 – 2 pieces','3 – 10 pieces','Bulk (10+)']
-};
 const WHEN = ['Immediately','This month','1 – 3 months','Just exploring'];
 const CITIES = ['Mumbai','Thane','Navi Mumbai','Pune'];
 const COUNTRIES = [
@@ -348,13 +341,9 @@ const STEPS = [
   { id:'items',    type:'multi', label:'Requirement', ask:()=>ITEMS[cat()].ask, opts:()=>ITEMS[cat()].opts, skip:()=>!ITEMS[cat()] },
   { id:'other',    type:'text',  label:'Other requirement', ask:()=>'What else do you need?', ph:'Type here…',
     skip:()=>!(S.a.items||[]).includes('Any Other') },
-  { id:'site',     type:'chips', label:'Site / buyer', ask:()=>isProducts() ? 'Who is it for?' : 'Where will it be set up?', opts:()=>SITES[cat()] },
-  { id:'size',     type:'chips', label:'Space / quantity', ask:()=>isProducts() ? 'How many pieces?' : 'How much space?', opts:()=>SIZES[cat()] },
   { id:'timeline', type:'chips', label:'Timeline', ask:()=>'When do you need it?', opts:()=>WHEN },
-  { id:'name',     type:'text',  label:'Name', ask:()=>'Almost done! Your name?', ph:'Your name', ac:'name' },
-  { id:'mobile',   type:'tel',   label:'WhatsApp', ask:()=>`Thanks ${S.a.name}! Your WhatsApp number?` },
+  { id:'contact',  type:'contact', label:'Name & WhatsApp', ask:()=>'Almost done! Your name and WhatsApp number?' },
   { id:'city',     type:'city',  label:'City', ask:()=>'Your city?', ph:'Type your city…', ac:'address-level2' },
-  { id:'note',     type:'note',  label:'Note', ask:()=>'Anything else? (optional)', ph:'Budget, details…' },
   { id:'review',   type:'review',label:'Review' },
   { id:'done',     type:'done',  label:'Done' }
 ];
@@ -401,7 +390,7 @@ const TOUCH = detectSource();
 /* =====================================================================
    STATE
    ===================================================================== */
-const KEY = 'fitfalcon_chatlead_v2';
+const KEY = 'fitfalcon_chatlead_v3';
 let S = load() || fresh();
 function fresh(){
   return { id:'FF-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,5).toUpperCase(),
@@ -509,6 +498,8 @@ function showInput(st){
   } else if (st.type === 'tel'){
     ccSel.hidden = false; ccSel.value = S.a.cc || '91';
     openText(st, 'WhatsApp number', 'numeric');
+  } else if (st.type === 'contact'){
+    contactForm();
   } else if (st.type === 'city'){
     CITIES.forEach(c => chip(esc(c), () => answer(st, c)));
     openText(st, st.ph);
@@ -526,6 +517,26 @@ function showInput(st){
   }
   body.scrollTop = body.scrollHeight;
 }
+/* Name + WhatsApp in one form: browsers autofill both fields together
+   when they sit in the same <form> with name/tel autocomplete hints. */
+function contactForm(){
+  const f = document.createElement('form');
+  f.className = 'contact'; f.autocomplete = 'on'; f.noValidate = true;
+  f.innerHTML = `
+    <input id="cName" name="name" autocomplete="name" autocapitalize="words" placeholder="Your name" maxlength="60" aria-label="Your name">
+    <div class="tel">
+      <select id="cCc" name="country-code" autocomplete="tel-country-code" aria-label="Country code">${COUNTRIES.map(([c, n]) => `<option value="${c}">+${c} ${n}</option>`).join('')}</select>
+      <input id="cTel" name="tel" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="WhatsApp number" maxlength="16" aria-label="WhatsApp number">
+    </div>
+    <button type="submit" class="chip go">Continue →</button>`;
+  ans.appendChild(f);
+  const nm = f.querySelector('#cName'), cc = f.querySelector('#cCc'), tel = f.querySelector('#cTel');
+  nm.value = S.a.name || ''; cc.value = S.a.cc || '91'; tel.value = S.a.mobile || '';
+  f.addEventListener('input', () => { err.textContent = ''; });
+  f.addEventListener('submit', e => { e.preventDefault(); answer(STEPS[S.step], { name: nm.value, cc: cc.value, tel: tel.value }); });
+  if (window.matchMedia('(min-width: 861px)').matches) setTimeout(() => nm.focus({ preventScroll:true }), 50);
+}
+
 /* Autofill and keyboard suggestion bars don't always fire 'input', so the send button
    is never disabled: it only dims, and submit always reads the box directly. */
 const syncSend = () => { sendBtn.classList.toggle('empty', !inp.value.trim()); if (inp.value.trim()) err.textContent = ''; };
@@ -542,19 +553,17 @@ async function answer(st, v){
   if (busy) return;
   err.textContent = '';
   let shown = v;
-  if (st.id === 'name'){
-    v = v.replace(/\s+/g, ' ').trim();
-    if (v.length < 2 || /\d{3,}/.test(v)){ err.textContent = 'Please enter your name.'; return; }
-    v = v.replace(/(^|\s)\S/g, c => c.toUpperCase()); shown = v;
-  }
-  if (st.type === 'tel'){
-    const cc = ccSel.value;
-    let d = v.replace(/\D/g, '');
+  if (st.type === 'contact'){
+    const name = String(v.name || '').replace(/\s+/g, ' ').trim();
+    if (name.length < 2 || /\d{3,}/.test(name)){ err.textContent = 'Please enter your name.'; return; }
+    const cc = v.cc;
+    let d = String(v.tel || '').replace(/\D/g, '');
     if (d.startsWith(cc) && d.length > (cc === '91' ? 10 : 9)) d = d.slice(cc.length);
     d = d.replace(/^0+/, '');
     const ok = cc === '91' ? /^[6-9]\d{9}$/.test(d) : /^\d{6,13}$/.test(d);
-    if (!ok){ err.textContent = cc === '91' ? 'Enter a valid 10-digit number.' : 'Enter a valid number.'; return; }
-    v = d; S.a.cc = cc; S.a.mobile = d; shown = phoneText();
+    if (!ok){ err.textContent = cc === '91' ? 'Enter a valid 10-digit WhatsApp number.' : 'Enter a valid WhatsApp number.'; return; }
+    S.a.name = name.replace(/(^|\s)\S/g, c => c.toUpperCase()); S.a.cc = cc; S.a.mobile = d;
+    shown = `${S.a.name} · ${phoneText()}`;
   }
   if (st.type === 'city' || st.id === 'other'){
     v = v.replace(/\s+/g, ' ').trim();
@@ -568,12 +577,12 @@ async function answer(st, v){
   clearInput();
   bubble('me', esc(shown));
 
-  if (st.id === 'category' && S.a.category !== v){ ['items','other','site','size','timeline'].forEach(k => delete S.a[k]); }
+  if (st.id === 'category' && S.a.category !== v){ ['items','other','timeline'].forEach(k => delete S.a[k]); }
   if (st.id === 'items' && !v.includes('Any Other')) delete S.a.other;
-  if (st.type !== 'review' && st.type !== 'tel') S.a[st.id] = v;
+  if (!['review','contact'].includes(st.type)) S.a[st.id] = v;
   save();
 
-  if (st.type === 'tel'){ S.mobileSaved = true; bubble('sys', '✓ Number saved'); }
+  if (st.type === 'contact'){ S.mobileSaved = true; bubble('sys', '✓ Number saved'); }
   if (st.type === 'review'){ S.done = true; save(); send('complete'); }
   else if (S.mobileSaved) send('partial', st.label);
   go(S.step + 1);
@@ -581,9 +590,7 @@ async function answer(st, v){
 
 function reviewHtml(){
   const rows = [['Category', S.a.category], ['Need', requirementText()],
-    [isProducts() ? 'For' : 'Site', S.a.site], [isProducts() ? 'Qty' : 'Space', S.a.size],
     ['When', S.a.timeline], ['Name', S.a.name], ['WhatsApp', phoneText()], ['City', S.a.city]];
-  if (S.a.note) rows.push(['Note', S.a.note]);
   return 'Your enquiry:<table class="sum">' +
     rows.filter(r => r[1]).map(([a,b]) => `<tr><td>${esc(a)}</td><td>${esc(b)}</td></tr>`).join('') + '</table>';
 }
@@ -610,11 +617,7 @@ function endButtons(){
 function scoreOf(){
   let s = ({ sports:3, fitness:3, soft:2, games:2, products:1 })[cat()] || 0;
   s += ({ 'Immediately':3, 'This month':2, '1 – 3 months':1 })[S.a.timeline] || 0;
-  const sizes = SIZES[cat()] || [], i = sizes.indexOf(S.a.size);
-  if (isProducts()) s += i === 2 ? 3 : i === 1 ? 1 : 0;
-  else if (i >= 0 && i >= sizes.length - 3 && !/Not sure/.test(S.a.size)) s += i === sizes.length - 2 ? 2 : 1;
-  if (S.a.site && !['Home','Personal use'].includes(S.a.site)) s += 1;
-  return s >= 7 ? 'Hot' : s >= 4 ? 'Warm' : 'Cold';
+  return s >= 6 ? 'Hot' : s >= 4 ? 'Warm' : 'Cold';
 }
 function payload(stage, lastStep){
   const sc = stage === 'complete' ? scoreOf() : '';
